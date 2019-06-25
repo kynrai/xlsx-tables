@@ -11,23 +11,37 @@ This library assumes that a given sheet in an xlsx format spreadsheet has nothin
 ## Usage
 
 ```go
-f, err := zip.OpenReader("xlsx_sample.xlsx")
-if err != nil {
-	t.Fatal(err)
-}
-defer f.Close()
+package main
 
-r := NewReader(f)
-r.Worksheet = "sheet2"
+import (
+	"archive/zip"
+	"fmt"
+	"io"
+	"log"
+	"strings"
 
-for {
-	row, err := r.Read()
+	xlsx "github.com/kynrai/xlsx-tables"
+)
+
+func main() {
+	f, err := zip.OpenReader("xlsx_sample.xlsx")
 	if err != nil {
-		if err == io.EOF {
-			break
-		}
 		log.Fatal(err)
 	}
-	fmt.Println(strings.Join(row, ","))
+	defer f.Close()
+
+	r := xlsx.NewReader(f)
+	r.Worksheet = "sheet2"
+
+	for {
+		row, err := r.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatal(err)
+		}
+		fmt.Println(strings.Join(row, ","))
+	}
 }
 ```

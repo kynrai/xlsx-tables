@@ -14,8 +14,6 @@ type Reader struct {
 	zr            *zip.ReadCloser
 	dec           *xml.Decoder
 	numLine       int
-	lastRow       Row
-	lastRecord    []string
 }
 
 func NewReader(zr *zip.ReadCloser) *Reader {
@@ -50,38 +48,24 @@ func (r *Reader) Read() ([]string, error) {
 			if ele != "row" {
 				continue
 			}
-			r.lastRow = Row{}
-			err = r.dec.DecodeElement(&r.lastRow, &se)
+			var row Row
+			err = r.dec.DecodeElement(&row, &se)
 			if err != nil {
 				return nil, err
 			}
-			if r.lastRecord == nil {
-				for _, v := range r.lastRow.C {
-					if v.T == "n" {
-						r.lastRecord = append(r.lastRecord, v.V)
-						continue
-					}
-					i, err := strconv.Atoi(v.V)
-					if err != nil {
-						return nil, err
-					}
-					r.lastRecord = append(r.lastRecord, r.sharedStrings[i])
-				}
-				return r.lastRecord, nil
-			}
-			for k, v := range r.lastRow.C {
+			rec := []string{}
+			for _, v := range row.C {
 				if v.T == "n" {
-					r.lastRecord[k] = v.V
+					rec = append(rec, v.V)
 					continue
 				}
 				i, err := strconv.Atoi(v.V)
 				if err != nil {
 					return nil, err
 				}
-
-				r.lastRecord[k] = r.sharedStrings[i]
+				rec = append(rec, r.sharedStrings[i])
 			}
-			return r.lastRecord, nil
+			return rec, nil
 		default:
 		}
 	}

@@ -7,6 +7,6 @@ type StringItem struct {
 type Row struct {
 	C []struct {
 		T string `xml:"t,attr"`
-		V int    `xml:"v"`
+		V string `xml:"v"`
 	} `xml:"c"`
 }

@@ -45,7 +45,7 @@ func TestReaderWorksheet2(t *testing.T) {
 		"code,product",
 		"1,oil",
 		"2,grease",
-		"3,tellus",
+		"3.1,tellus",
 	}
 	f, err := zip.OpenReader("testdata/xlsx_sample.xlsx")
 	if err != nil {

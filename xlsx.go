@@ -58,19 +58,28 @@ func (r *Reader) Read() ([]string, error) {
 			if r.lastRecord == nil {
 				for _, v := range r.lastRow.C {
 					if v.T == "n" {
-						r.lastRecord = append(r.lastRecord, strconv.Itoa(v.V))
+						r.lastRecord = append(r.lastRecord, v.V)
 						continue
 					}
-					r.lastRecord = append(r.lastRecord, r.sharedStrings[v.V])
+					i, err := strconv.Atoi(v.V)
+					if err != nil {
+						return nil, err
+					}
+					r.lastRecord = append(r.lastRecord, r.sharedStrings[i])
 				}
 				return r.lastRecord, nil
 			}
 			for k, v := range r.lastRow.C {
 				if v.T == "n" {
-					r.lastRecord[k] = strconv.Itoa(v.V)
+					r.lastRecord[k] = v.V
 					continue
 				}
-				r.lastRecord[k] = r.sharedStrings[v.V]
+				i, err := strconv.Atoi(v.V)
+				if err != nil {
+					return nil, err
+				}
+
+				r.lastRecord[k] = r.sharedStrings[i]
 			}
 			return r.lastRecord, nil
 		default:
